@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import fireVideo from "../../AQMDLImyA-wZot1HjG-ScsX3MLazkYM9bBhbwXuX-GdRjFO6K9ltq489vtXgyNn8useEc8vQVhrbJfgXD1vNxeqao70nEo9LiDjXH52Y4Q.mp4";
-
 /* ---------- Edit these ---------- */
 const RESTAURANT = {
   name: "Ember & Flame",
@@ -155,7 +153,7 @@ const CSS = `
 `;
 
 /* Set to "" to use the built-in code-drawn fire instead. */
-const FIRE_VIDEO = fireVideo;
+const FIRE_VIDEO = `${import.meta.env.BASE_URL}AQMDLImyA-wZot1HjG-ScsX3MLazkYM9bBhbwXuX-GdRjFO6K9ltq489vtXgyNn8useEc8vQVhrbJfgXD1vNxeqao70nEo9LiDjXH52Y4Q.mp4`;
 
 const FRAG = `
 precision mediump float;
