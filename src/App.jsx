@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import fireVideo from "../../AQMDLImyA-wZot1HjG-ScsX3MLazkYM9bBhbwXuX-GdRjFO6K9ltq489vtXgyNn8useEc8vQVhrbJfgXD1vNxeqao70nEo9LiDjXH52Y4Q.mp4";
 
 /* ---------- Edit these ---------- */
 const RESTAURANT = {
@@ -75,25 +76,31 @@ const fmt = (n) => RESTAURANT.currency + (Number.isInteger(n) ? n.toFixed(2) : n
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
-.rm{--maroon:#3a060b;--maroon2:#5b0f14;--ember:#ff6a13;--gold:#ffc21a;--cream:#fff3e0;--mute:#e7bfa5;--line:#ffffff2b;
+.rm{position:relative;isolation:isolate;--maroon:#3a060b;--maroon2:#5b0f14;--ember:#ff6a13;--gold:#ffc21a;--cream:#fff3e0;--mute:#e7bfa5;--line:#ffffff2b;
   min-height:100vh;color:var(--cream);font-family:'Inter',system-ui,sans-serif;
   background:radial-gradient(90rem 50rem at 50% -10%,#7a1a14 0%,var(--maroon2) 35%,var(--maroon) 75%,#210306 100%);
   overflow-x:hidden}
 .rm *{box-sizing:border-box}
-.rm-hero{position:relative;text-align:center;padding:4.5rem 1.25rem 7.5rem;overflow:hidden}
-.rm-fire{position:absolute;left:0;right:0;bottom:-30px;height:240px;pointer-events:none;filter:blur(16px);opacity:.95}
-.rm-fire i{position:absolute;bottom:-60px;width:150px;height:230px;border-radius:50% 50% 45% 45%/70% 70% 30% 30%;
-  background:radial-gradient(ellipse at 50% 85%,var(--gold) 0%,var(--ember) 45%,transparent 72%);
-  animation:rm-flick 1.6s ease-in-out infinite alternate;transform-origin:50% 100%}
-@keyframes rm-flick{0%{transform:scale(.85,.8) skewX(-6deg)}50%{transform:scale(1.05,1.1) skewX(5deg)}100%{transform:scale(.95,.92) skewX(-3deg)}}
-.rm-kicker{font-family:'Oswald',sans-serif;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);font-size:.85rem;margin:0}
-.rm-title{font-family:'Bebas Neue','Oswald',Impact,sans-serif;font-size:clamp(4rem,15vw,9.5rem);line-height:.9;margin:.4rem 0 0;
-  background:linear-gradient(180deg,#fff3c2 0%,var(--gold) 35%,var(--ember) 80%);-webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 6px 24px #ff6a1366)}
+.rm-hero{position:relative;text-align:center;padding:1rem 1.25rem 4.5rem;overflow:hidden}
+.rm-vfire{position:fixed;inset:0;z-index:-1;display:flex;pointer-events:none;mix-blend-mode:screen}
+.rm-shade{position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#2a040080 0%,#2a040020 45%,#2a040099 100%)}
+.rm-vfire video{flex:1.35 1 0;min-width:0;height:100%;margin:0 -5%;object-fit:cover;object-position:50% 100%;
+  filter:brightness(1.45) saturate(1.3) contrast(1.08);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent)}
+.rm-hero.vid{min-height:min(90vh,760px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:5rem}
+.rm-hero.vid .rm-title{color:#fff3e0;-webkit-text-stroke:0;text-shadow:0 4px 34px #000c,0 0 46px #ff6a1388}
+.rm-flame{position:relative;display:inline-block;margin:4.5rem .5rem 0;padding:0 1.2rem}
+.rm-fire{position:absolute;left:-8%;right:-8%;top:-70%;bottom:-20%;pointer-events:none;z-index:0}
+.rm-fire canvas,.rm-fire video{width:100%;height:100%;display:block;object-fit:cover}
+.rm-fire video{mix-blend-mode:screen}
+.rm-hero>*{position:relative;z-index:1}
+.rm-kicker{font-family:'Oswald',sans-serif;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);font-size:.85rem;margin:3rem 0 0}
+.rm-title{position:relative;z-index:2;font-family:'Bebas Neue','Oswald',Impact,sans-serif;font-size:clamp(4rem,15vw,9.5rem);line-height:.9;margin:0;
+  color:#2a0407;-webkit-text-stroke:1.5px #ffe2a888;text-shadow:0 0 18px #ffd27a66}
 .rm-sub{font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);letter-spacing:.12em;margin:.2rem 0 0;color:var(--cream)}
 .rm-meta{margin:1.3rem auto 0;color:var(--mute);font-size:.95rem}
 
-.rm-nav{position:sticky;top:0;z-index:20;background:#2a0407e8;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+.rm-nav{position:sticky;top:0;z-index:20;background:#2a0407b8;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
   display:flex;gap:.5rem;overflow-x:auto;padding:.7rem 1rem;justify-content:center;scrollbar-width:none}
 .rm-nav::-webkit-scrollbar{display:none}
 .rm-tab{flex:none;font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.1em;font-size:.9rem;font-weight:500;
@@ -102,7 +109,7 @@ const CSS = `
 .rm-tab[aria-selected="true"]{background:linear-gradient(90deg,var(--ember),var(--gold));color:#2a0407;border-color:transparent;font-weight:600}
 .rm-tab:focus-visible,.rm-cta:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 
-.rm-wrap{max-width:1040px;margin:0 auto;padding:2.5rem 1.25rem 3rem}
+.rm-wrap{max-width:1040px;margin:0 auto;padding:2.5rem 1.5rem 3rem;background:#210306a8;backdrop-filter:blur(6px);border-radius:26px}
 .rm-sec-title{display:flex;align-items:center;gap:.8rem;font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(2.4rem,7vw,3.8rem);
   margin:0 0 .4rem;color:var(--gold);letter-spacing:.04em}
 .rm-sec-title::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,var(--ember),transparent)}
@@ -144,8 +151,107 @@ const CSS = `
   .rm-price{font-size:1rem}
   .rm-nav{justify-content:flex-start}
 }
-@media (prefers-reduced-motion:reduce){.rm-fire i,.rm-fade{animation:none}}
+@media (prefers-reduced-motion:reduce){.rm-fade{animation:none}}
 `;
+
+/* Set to "" to use the built-in code-drawn fire instead. */
+const FIRE_VIDEO = fireVideo;
+
+const FRAG = `
+precision mediump float;
+uniform vec2 r; uniform float t;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+vec2(1.,1.)),f.x),f.y);}
+float fbm(vec2 p){float a=.5,s=0.;for(int i=0;i<6;i++){s+=a*n(p);p=p*2.1+vec2(1.7,9.2);a*=.52;}return s;}
+void main(){
+  vec2 uv=gl_FragCoord.xy/r; float asp=r.x/r.y;
+  vec2 p=vec2(uv.x*asp*3.2,uv.y*1.6);
+  float w1=fbm(p*vec2(.9,.6)+vec2(0.,-t*.55));
+  float w2=fbm(p*vec2(1.7,.9)+vec2(5.2,-t*.9));
+  vec2 q=vec2(p.x+(w1-.5)*1.1+(w2-.5)*.5,p.y-t*1.7);
+  float f=fbm(q*vec2(1.25,.55));
+  float fine=fbm(q*vec2(3.4,1.4)+vec2(0.,-t*.6));
+  float fl=.96+.08*n(vec2(t*8.,2.));
+  float side=smoothstep(0.,.12,uv.x)*smoothstep(1.,.88,uv.x);
+  float base=pow(max(1.-uv.y,0.),.8)*1.7;
+  float i=(f*1.2+fine*.35+base-1.1)*fl;
+  i*=.55+.45*side;
+  i=clamp(i,0.,1.5);
+  vec3 c=vec3(1.4*i,1.15*i*i*i+.1*i*i,.55*pow(i,5.));
+  float a=smoothstep(.05,.3,i);
+  float gA=smoothstep(-.45,.1,i)*.55*side;
+  vec3 col=c*a+vec3(.75,.1,.03)*gA*(1.-a);
+  float al=a+gA*(1.-a);
+  gl_FragColor=vec4(min(col,1.),al);
+}`;
+
+function FireVideo() {
+  const refs = useRef([]);
+  useEffect(() => {
+    const starts = [0, 0.35, 0.7];
+    const playAll = () => refs.current.forEach((v) => v && v.play().catch(() => {}));
+    refs.current.forEach((v, i) => {
+      if (!v) return;
+      v.muted = true;
+      const go = () => { v.currentTime = (v.duration || 14) * starts[i]; v.play().catch(() => {}); };
+      if (v.readyState > 0) go(); else v.addEventListener("loadedmetadata", go, { once: true });
+    });
+    /* some browsers wait for a first touch/scroll before autoplay */
+    ["pointerdown", "scroll", "keydown"].forEach((e) => window.addEventListener(e, playAll, { once: true, passive: true }));
+    return () => ["pointerdown", "scroll", "keydown"].forEach((e) => window.removeEventListener(e, playAll));
+  }, []);
+  return (
+    <>
+      <div className="rm-vfire" aria-hidden="true">
+        {[0, 1, 2].map((i) => (
+          <video key={i} ref={(el) => (refs.current[i] = el)} src={FIRE_VIDEO} autoPlay muted loop playsInline preload="auto"
+                 style={i === 1 ? { transform: "scaleX(-1)" } : undefined} />
+        ))}
+      </div>
+      <div className="rm-shade" aria-hidden="true" />
+    </>
+  );
+}
+
+function FireBackground() {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (FIRE_VIDEO) return;
+    const cv = ref.current;
+    const gl = cv && cv.getContext("webgl", { alpha: true, premultipliedAlpha: true });
+    if (!gl) return;
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+    const pr = gl.createProgram();
+    gl.attachShader(pr, sh(gl.VERTEX_SHADER, "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}"));
+    gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(pr); gl.useProgram(pr);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, "a");
+    gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const uR = gl.getUniformLocation(pr, "r"), uT = gl.getUniformLocation(pr, "t");
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t0 = performance.now();
+    let raf;
+    const draw = (now) => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const w = Math.floor(cv.clientWidth * dpr), h = Math.floor(cv.clientHeight * dpr);
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+      gl.viewport(0, 0, w, h); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform2f(uR, w, h); gl.uniform1f(uT, still ? 3 : (now - t0) / 1000);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      if (!still) raf = requestAnimationFrame(draw);
+    };
+    raf = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return (
+    <div className="rm-fire" aria-hidden="true">
+      {FIRE_VIDEO ? <video src={FIRE_VIDEO} autoPlay muted loop playsInline /> : <canvas ref={ref} />}
+    </div>
+  );
+}
 
 export default function RestaurantMenu() {
   const [active, setActive] = useState("pizzas");
@@ -154,15 +260,12 @@ export default function RestaurantMenu() {
   return (
     <div className="rm">
       <style>{CSS}</style>
+      {FIRE_VIDEO && <FireVideo />}
 
-      <header className="rm-hero">
-        <div className="rm-fire" aria-hidden="true">
-          {[3, 17, 31, 45, 59, 73, 87].map((l, i) => (
-            <i key={l} style={{ left: `${l}%`, animationDelay: `${-i * 0.37}s`, animationDuration: `${1.2 + (i % 3) * 0.35}s` }} />
-          ))}
-        </div>
+      <header className={"rm-hero" + (FIRE_VIDEO ? " vid" : "")}>
         <p className="rm-kicker">Flame-grilled · Fresh daily</p>
-        <h1 className="rm-title">{RESTAURANT.name}</h1>
+        <div className="rm-flame">{!FIRE_VIDEO && <FireBackground />}
+          <h1 className="rm-title">{RESTAURANT.name}</h1></div>
         <p className="rm-sub">{RESTAURANT.tagline}</p>
         <p className="rm-meta">{RESTAURANT.hours}</p>
       </header>

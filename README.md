@@ -1,16 +1,28 @@
-# React + Vite
+# Restaurant Menu
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The restaurant menu is deployed to GitHub Pages at
+https://Shadyar44.github.io/happybirthday/.
 
-Currently, two official plugins are available:
+## Local development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+From this directory, install dependencies and start the Vite development server:
 
-## React Compiler
+```sh
+npm ci
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Run the production build and lint checks with:
 
-## Expanding the ESLint configuration
+```sh
+npm run build
+npm run lint
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## GitHub Pages deployment
+
+The GitHub Actions workflow at `../.github/workflows/deploy-pages.yml` builds
+this app and publishes it to GitHub Pages whenever changes are pushed to
+`main`. In the repository's **Settings > Pages**, set the build and deployment
+source to **GitHub Actions**. After that one-time setup, pushing changes to
+`main` automatically updates the published site.
